@@ -1,6 +1,10 @@
-import { MousePointer2, Type, Image as ImageIcon, Square, Circle } from "lucide-react";
+"use client";
 
-const tools = [
+import { MousePointer2, Type, Image as ImageIcon, Square, Circle } from "lucide-react";
+import { useEditorStore } from "@/store/useEditorStore";
+import { ToolType } from "@/types/canvas";
+
+const tools: { id: ToolType; icon: any; label: string }[] = [
   { id: "select", icon: MousePointer2, label: "Select" },
   { id: "text", icon: Type, label: "Text" },
   { id: "rectangle", icon: Square, label: "Rectangle" },
@@ -9,15 +13,19 @@ const tools = [
 ];
 
 export function LeftSidebar() {
+  const activeTool = useEditorStore((state) => state.activeTool);
+  const setActiveTool = useEditorStore((state) => state.setActiveTool);
+
   return (
     <aside className="w-16 flex-shrink-0 border-r border-border bg-card/80 backdrop-blur-md flex flex-col items-center py-4 gap-4 z-10 shadow-[1px_0_3px_0_rgba(0,0,0,0.02)]">
       {tools.map((tool) => {
         const Icon = tool.icon;
-        const isActive = tool.id === "select"; // Mock active state
+        const isActive = tool.id === activeTool;
         return (
           <button
             key={tool.id}
             title={tool.label}
+            onClick={() => setActiveTool(tool.id)}
             className={`p-3 rounded-xl transition-all duration-200 group relative ${
               isActive 
                 ? "bg-primary/10 text-primary shadow-sm" 
