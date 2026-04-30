@@ -36,24 +36,28 @@ app.use(limiter);
 app.use('/api/auth', createProxyMiddleware({
   target: process.env.AUTH_SERVICE_URL || 'http://localhost:4001',
   changeOrigin: true,
+  pathRewrite: { '^/api/auth': '' },
 }));
 
 // Project Service (e.g. running on port 4002)
 app.use('/api/projects', createProxyMiddleware({
   target: process.env.PROJECT_SERVICE_URL || 'http://localhost:4002',
   changeOrigin: true,
+  pathRewrite: { '^/api/projects': '' },
 }));
 
 // Asset Service (e.g. running on port 4003)
 app.use('/api/assets', createProxyMiddleware({
   target: process.env.ASSET_SERVICE_URL || 'http://localhost:4003',
   changeOrigin: true,
+  pathRewrite: { '^/api/assets': '' },
 }));
 
 // Template Service (e.g. running on port 4004)
 app.use('/api/templates', createProxyMiddleware({
   target: process.env.TEMPLATE_SERVICE_URL || 'http://localhost:4004',
   changeOrigin: true,
+  pathRewrite: { '^/api/templates': '' },
 }));
 
 // Health Check Endpoint
