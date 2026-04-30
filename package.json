@@ -9,7 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w api-gateway\"",
+    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w api-gateway\" \"npm run dev -w auth-service\"",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present"
