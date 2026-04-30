@@ -1,3 +1,20 @@
+"use client";
+
+import dynamic from 'next/dynamic';
+
+// Dynamically import the Konva canvas with SSR disabled
+const KonvaCanvas = dynamic(() => import('@/components/canvas/KonvaCanvas'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-[800px] h-[600px] bg-white shadow-2xl rounded-sm ring-1 ring-black/5 flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-zinc-400 text-sm font-medium">Loading Canvas Engine...</p>
+      </div>
+    </div>
+  )
+});
+
 export function CanvasArea() {
   return (
     <main className="flex-1 bg-background relative overflow-hidden flex items-center justify-center">
@@ -10,9 +27,9 @@ export function CanvasArea() {
         }}
       />
       
-      {/* Mock Canvas Container */}
-      <div className="w-[800px] h-[600px] bg-white dark:bg-[#e4e4e7] shadow-2xl rounded-sm ring-1 ring-black/5 relative z-0 flex items-center justify-center transition-transform">
-        <p className="text-zinc-400 text-sm font-medium select-none">Canvas Rendering Area</p>
+      {/* Interactive Canvas Container */}
+      <div className="relative z-0 flex items-center justify-center transition-transform">
+        <KonvaCanvas />
       </div>
       
       {/* Zoom controls mockup */}
