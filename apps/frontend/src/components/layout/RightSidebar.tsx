@@ -2,13 +2,17 @@
 
 import { useEditorStore } from "@/store/useEditorStore";
 import { CanvasNode } from "@/types/canvas";
-import { Trash2 } from "lucide-react";
+import { Trash2, BringToFront, SendToBack, ArrowUp, ArrowDown } from "lucide-react";
 
 export function RightSidebar() {
   const selectedNodeId = useEditorStore((state) => state.selectedNodeId);
   const nodes = useEditorStore((state) => state.nodes);
   const updateNode = useEditorStore((state) => state.updateNode);
   const deleteNode = useEditorStore((state) => state.deleteNode);
+  const bringForward = useEditorStore((state) => state.bringForward);
+  const sendBackward = useEditorStore((state) => state.sendBackward);
+  const bringToFront = useEditorStore((state) => state.bringToFront);
+  const sendToBack = useEditorStore((state) => state.sendToBack);
 
   const selectedNode = nodes.find((n) => n.id === selectedNodeId);
 
@@ -121,6 +125,16 @@ export function RightSidebar() {
               onChange={(e) => handleChange('rotation', parseFloat(e.target.value) || 0)}
               className="w-full bg-background border border-border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
             />
+          </div>
+          
+          <div className="flex flex-col gap-1 mt-2">
+            <label className="text-xs text-foreground/70">Layer Order</label>
+            <div className="flex items-center gap-2">
+              <button onClick={() => bringToFront(selectedNode.id)} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Bring to Front"><BringToFront size={16} /></button>
+              <button onClick={() => bringForward(selectedNode.id)} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Bring Forward"><ArrowUp size={16} /></button>
+              <button onClick={() => sendBackward(selectedNode.id)} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Send Backward"><ArrowDown size={16} /></button>
+              <button onClick={() => sendToBack(selectedNode.id)} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Send to Back"><SendToBack size={16} /></button>
+            </div>
           </div>
         </div>
 

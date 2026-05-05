@@ -20,6 +20,10 @@ interface EditorState {
   setZoom: (zoom: number) => void;
   setProjectId: (id: string | null) => void;
   setStageRef: (ref: any) => void;
+  bringForward: (id: string) => void;
+  sendBackward: (id: string) => void;
+  bringToFront: (id: string) => void;
+  sendToBack: (id: string) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -60,4 +64,42 @@ export const useEditorStore = create<EditorState>((set) => ({
   setZoom: (zoom) => set({ zoom }),
   setProjectId: (id) => set({ projectId: id }),
   setStageRef: (ref) => set({ stageRef: ref }),
+
+  bringForward: (id) => set((state) => {
+    const index = state.nodes.findIndex(n => n.id === id);
+    if (index === -1 || index === state.nodes.length - 1) return state;
+    const newNodes = [...state.nodes];
+    const temp = newNodes[index];
+    newNodes[index] = newNodes[index + 1];
+    newNodes[index + 1] = temp;
+    return { nodes: newNodes };
+  }),
+  
+  sendBackward: (id) => set((state) => {
+    const index = state.nodes.findIndex(n => n.id === id);
+    if (index <= 0) return state;
+    const newNodes = [...state.nodes];
+    const temp = newNodes[index];
+    newNodes[index] = newNodes[index - 1];
+    newNodes[index - 1] = temp;
+    return { nodes: newNodes };
+  }),
+  
+  bringToFront: (id) => set((state) => {
+    const index = state.nodes.findIndex(n => n.id === id);
+    if (index === -1 || index === state.nodes.length - 1) return state;
+    const newNodes = [...state.nodes];
+    const [node] = newNodes.splice(index, 1);
+    newNodes.push(node);
+    return { nodes: newNodes };
+  }),
+  
+  sendToBack: (id) => set((state) => {
+    const index = state.nodes.findIndex(n => n.id === id);
+    if (index <= 0) return state;
+    const newNodes = [...state.nodes];
+    const [node] = newNodes.splice(index, 1);
+    newNodes.unshift(node);
+    return { nodes: newNodes };
+  }),
 }));
