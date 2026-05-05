@@ -1,4 +1,4 @@
-import { Download, Redo2, Undo2, Save, Loader2, Home } from "lucide-react";
+import { Download, Redo2, Undo2, Save, Loader2, Home, Layers } from "lucide-react";
 import { useState } from "react";
 import { useEditorStore } from "@/store/useEditorStore";
 import api from "@/lib/axios";
@@ -63,8 +63,8 @@ export function Header() {
         </Link>
         <div className="w-px h-6 bg-border mx-1"></div>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#5e21d9] to-[#01b4e4] flex items-center justify-center text-white font-bold shadow-sm">
-            D
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#5e21d9] to-[#01b4e4] flex items-center justify-center text-white shadow-sm">
+            <Layers size={18} strokeWidth={2.5} />
           </div>
           <span className="font-semibold text-sm tracking-tight hidden sm:inline-block">Design Desk</span>
         </div>
