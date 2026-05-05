@@ -1,9 +1,24 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
-import { Stage, Layer, Rect, Circle, Text, Transformer } from 'react-konva';
+import { useEffect, useRef, useState } from 'react';
+import { Stage, Layer, Rect, Circle, Text, Transformer, Image as KonvaImage } from 'react-konva';
 import { useEditorStore } from '@/store/useEditorStore';
-import { CanvasNode } from '@/types/canvas';
+import { CanvasNode, ImageNode } from '@/types/canvas';
+
+const URLImage = ({ src, ...props }: any) => {
+  const [image, setImage] = useState<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    const img = new window.Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = src;
+    img.onload = () => {
+      setImage(img);
+    };
+  }, [src]);
+
+  return <KonvaImage image={image || undefined} {...props} />;
+};
 
 export default function KonvaCanvas() {
   const nodes = useEditorStore((state) => state.nodes);
@@ -141,6 +156,15 @@ export default function KonvaCanvas() {
             fontFamily={node.fontFamily}
             fill={node.fill}
             align={node.align}
+          />
+        );
+      case 'image':
+        return (
+          <URLImage
+            {...commonProps}
+            src={(node as ImageNode).src}
+            width={node.width}
+            height={node.height}
           />
         );
       default:
