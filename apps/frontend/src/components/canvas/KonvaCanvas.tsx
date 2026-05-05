@@ -21,6 +21,8 @@ const URLImage = ({ src, ...props }: any) => {
 };
 
 export default function KonvaCanvas() {
+  const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+
   const nodes = useEditorStore((state) => state.nodes);
   const zoom = useEditorStore((state) => state.zoom);
   const selectedNodeId = useEditorStore((state) => state.selectedNodeId);
@@ -126,6 +128,18 @@ export default function KonvaCanvas() {
       draggable: isDraggable,
       onClick: () => handleSelect(node.id),
       onTap: () => handleSelect(node.id),
+      onDblClick: () => {
+        if (node.type === 'text') {
+          setEditingNodeId(node.id);
+          setSelectedNodeId(null); // Hide transformer
+        }
+      },
+      onDblTap: () => {
+        if (node.type === 'text') {
+          setEditingNodeId(node.id);
+          setSelectedNodeId(null);
+        }
+      },
       onDragEnd: (e: any) => handleDragEnd(e, node.id),
       onTransformEnd: (e: any) => handleTransformEnd(e, node),
     };
@@ -162,6 +176,7 @@ export default function KonvaCanvas() {
             fontFamily={node.fontFamily}
             fill={node.fill}
             align={node.align}
+            visible={node.id !== editingNodeId}
           />
         );
       case 'image':
@@ -178,39 +193,84 @@ export default function KonvaCanvas() {
     }
   };
 
+  const editingNode = nodes.find(n => n.id === editingNodeId) as any;
+
   return (
-    <Stage 
-      ref={stageRef}
-      width={stageWidth} 
-      height={stageHeight}
-      scaleX={zoom / 100}
-      scaleY={zoom / 100}
-      className="bg-white shadow-2xl rounded-sm ring-1 ring-black/5 cursor-crosshair"
-      onMouseDown={checkDeselect}
-      onTouchStart={checkDeselect}
-      style={{ cursor: activeTool === 'select' ? 'default' : 'crosshair' }}
-    >
-      <Layer>
-        {nodes.map(renderNode)}
-        
-        <Transformer 
-          ref={trRef}
-          boundBoxFunc={(oldBox, newBox) => {
-            // Limit minimum size
-            if (newBox.width < 5 || newBox.height < 5) {
-              return oldBox;
-            }
-            return newBox;
+    <div className="relative" style={{ width: stageWidth, height: stageHeight }}>
+      <Stage 
+        ref={stageRef}
+        width={stageWidth} 
+        height={stageHeight}
+        scaleX={zoom / 100}
+        scaleY={zoom / 100}
+        className="bg-white shadow-2xl rounded-sm ring-1 ring-black/5 cursor-crosshair"
+        onMouseDown={checkDeselect}
+        onTouchStart={checkDeselect}
+        style={{ cursor: activeTool === 'select' ? 'default' : 'crosshair' }}
+      >
+        <Layer>
+          {nodes.map(renderNode)}
+          
+          <Transformer 
+            ref={trRef}
+            boundBoxFunc={(oldBox, newBox) => {
+              // Limit minimum size
+              if (newBox.width < 5 || newBox.height < 5) {
+                return oldBox;
+              }
+              return newBox;
+            }}
+            // Customize transformer styles to look more premium
+            anchorSize={8}
+            anchorCornerRadius={4}
+            anchorStroke="#6366f1"
+            anchorFill="#ffffff"
+            borderStroke="#6366f1"
+            borderDash={[4, 4]}
+          />
+        </Layer>
+      </Stage>
+
+      {/* HTML Textarea Overlay for Inline Editing */}
+      {editingNode && editingNode.type === 'text' && (
+        <textarea
+          value={editingNode.text}
+          onChange={(e) => updateNode(editingNode.id, { text: e.target.value })}
+          onBlur={() => setEditingNodeId(null)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setEditingNodeId(null);
+            // Optional: Shift+Enter for new line, Enter to submit
+            // if (e.key === 'Enter' && !e.shiftKey) {
+            //   e.preventDefault();
+            //   setEditingNodeId(null);
+            // }
           }}
-          // Customize transformer styles to look more premium
-          anchorSize={8}
-          anchorCornerRadius={4}
-          anchorStroke="#6366f1"
-          anchorFill="#ffffff"
-          borderStroke="#6366f1"
-          borderDash={[4, 4]}
+          autoFocus
+          style={{
+            position: 'absolute',
+            top: `${editingNode.y * (zoom / 100)}px`,
+            left: `${editingNode.x * (zoom / 100)}px`,
+            width: `${Math.max(editingNode.width || 200, 50) * (zoom / 100)}px`,
+            height: `${editingNode.fontSize * 1.5 * (zoom / 100)}px`,
+            fontSize: `${editingNode.fontSize * (zoom / 100)}px`,
+            fontFamily: editingNode.fontFamily,
+            color: editingNode.fill,
+            transform: `rotate(${editingNode.rotation || 0}deg)`,
+            transformOrigin: 'top left',
+            background: 'transparent',
+            border: 'none',
+            outline: '2px solid rgba(99, 102, 241, 0.5)', // Subtle indigo outline
+            padding: 0,
+            margin: 0,
+            overflow: 'hidden',
+            resize: 'none',
+            lineHeight: 1,
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            zIndex: 10,
+          }}
         />
-      </Layer>
-    </Stage>
+      )}
+    </div>
   );
 }
