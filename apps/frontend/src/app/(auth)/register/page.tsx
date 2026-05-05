@@ -25,7 +25,7 @@ export default function RegisterPage() {
     try {
       const response = await api.post('/auth/register', { name, email, password });
       login(response.data.user, response.data.token);
-      router.push('/dashboard');
+      router.push('/');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to create account. Please try again.');
     } finally {
