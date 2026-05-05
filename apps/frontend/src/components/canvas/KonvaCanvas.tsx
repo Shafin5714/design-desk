@@ -27,9 +27,15 @@ export default function KonvaCanvas() {
   const setSelectedNodeId = useEditorStore((state) => state.setSelectedNodeId);
   const updateNode = useEditorStore((state) => state.updateNode);
   const activeTool = useEditorStore((state) => state.activeTool);
+  const setStageRef = useEditorStore((state) => state.setStageRef);
 
   const stageRef = useRef<any>(null);
   const trRef = useRef<any>(null);
+
+  // Store the stageRef globally so Header can export it
+  useEffect(() => {
+    setStageRef(stageRef);
+  }, [setStageRef]);
 
   // In a real app, you'd calculate this based on container size or project settings.
   const stageWidth = 800;

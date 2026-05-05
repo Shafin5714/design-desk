@@ -8,6 +8,7 @@ export function Header() {
   const [isSaving, setIsSaving] = useState(false);
   const projectId = useEditorStore(state => state.projectId);
   const nodes = useEditorStore(state => state.nodes);
+  const stageRef = useEditorStore(state => state.stageRef);
 
   const handleSave = async () => {
     if (!projectId) return;
@@ -18,6 +19,34 @@ export function Header() {
       console.error("Failed to save project:", error);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleExport = () => {
+    if (!stageRef?.current) {
+      alert("Canvas is not ready for export yet.");
+      return;
+    }
+
+    try {
+      // De-select any selected nodes so the Transformer outline is not visible in the export
+      useEditorStore.getState().setSelectedNodeId(null);
+      
+      // Wait for React to re-render without the Transformer before exporting
+      setTimeout(() => {
+        const uri = stageRef.current.toDataURL({ pixelRatio: 2 }); // pixelRatio 2 for high quality
+        
+        // Trigger browser download
+        const link = document.createElement('a');
+        link.download = 'design-desk-export.png';
+        link.href = uri;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }, 50);
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert("Failed to export canvas. If you have images from external domains, this might be blocked by 'Tainted Canvas' browser security.");
     }
   };
 
@@ -54,7 +83,10 @@ export function Header() {
           {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
           Save
         </button>
-        <button className="bg-gradient-to-r from-[#5e21d9] to-[#01b4e4] hover:opacity-90 text-white text-sm font-medium px-4 py-1.5 rounded-md flex items-center gap-2 transition-all shadow-sm hover:shadow-md">
+        <button 
+          onClick={handleExport}
+          className="bg-gradient-to-r from-[#5e21d9] to-[#01b4e4] hover:opacity-90 text-white text-sm font-medium px-4 py-1.5 rounded-md flex items-center gap-2 transition-all shadow-sm hover:shadow-md"
+        >
           <Download size={16} />
           Export
         </button>
