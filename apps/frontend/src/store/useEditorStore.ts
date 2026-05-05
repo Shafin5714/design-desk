@@ -7,6 +7,7 @@ interface EditorState {
   selectedNodeId: string | null;
   activeTool: ToolType;
   zoom: number;
+  projectId: string | null;
 
   // Actions
   setNodes: (nodes: CanvasNode[]) => void;
@@ -16,6 +17,7 @@ interface EditorState {
   setSelectedNodeId: (id: string | null) => void;
   setActiveTool: (tool: ToolType) => void;
   setZoom: (zoom: number) => void;
+  setProjectId: (id: string | null) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -23,6 +25,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   selectedNodeId: null,
   activeTool: 'select',
   zoom: 100,
+  projectId: null,
 
   setNodes: (nodes) => set({ nodes }),
   
@@ -52,4 +55,5 @@ export const useEditorStore = create<EditorState>((set) => ({
   })),
   
   setZoom: (zoom) => set({ zoom }),
+  setProjectId: (id) => set({ projectId: id }),
 }));
