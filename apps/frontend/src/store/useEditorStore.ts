@@ -9,6 +9,10 @@ interface EditorState {
   zoom: number;
   projectId: string | null;
   stageRef: any | null;
+  
+  // History
+  past: CanvasNode[][];
+  future: CanvasNode[][];
 
   // Actions
   setNodes: (nodes: CanvasNode[]) => void;
@@ -24,6 +28,10 @@ interface EditorState {
   sendBackward: (id: string) => void;
   bringToFront: (id: string) => void;
   sendToBack: (id: string) => void;
+
+  undo: () => void;
+  redo: () => void;
+  pushHistory: () => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -33,8 +41,10 @@ export const useEditorStore = create<EditorState>((set) => ({
   zoom: 100,
   projectId: null,
   stageRef: null,
+  past: [],
+  future: [],
 
-  setNodes: (nodes) => set({ nodes }),
+  setNodes: (nodes) => set({ nodes, past: [], future: [] }), // Reset history on load
   
   addNode: (node) => set((state) => ({ 
     nodes: [...state.nodes, node],
@@ -101,5 +111,40 @@ export const useEditorStore = create<EditorState>((set) => ({
     const [node] = newNodes.splice(index, 1);
     newNodes.unshift(node);
     return { nodes: newNodes };
+  }),
+
+  pushHistory: () => set((state) => {
+    const lastPast = state.past[state.past.length - 1];
+    // Don't push if nothing changed structurally
+    if (JSON.stringify(lastPast) === JSON.stringify(state.nodes)) return state;
+    
+    return {
+      past: [...state.past, state.nodes].slice(-50), // Keep last 50 states
+      future: [],
+    };
+  }),
+
+  undo: () => set((state) => {
+    if (state.past.length === 0) return state;
+    const previous = state.past[state.past.length - 1];
+    const newPast = state.past.slice(0, state.past.length - 1);
+    return {
+      past: newPast,
+      future: [state.nodes, ...state.future],
+      nodes: previous,
+      selectedNodeId: null, // Clear selection to avoid selecting missing nodes
+    };
+  }),
+
+  redo: () => set((state) => {
+    if (state.future.length === 0) return state;
+    const next = state.future[0];
+    const newFuture = state.future.slice(1);
+    return {
+      past: [...state.past, state.nodes],
+      future: newFuture,
+      nodes: next,
+      selectedNodeId: null,
+    };
   }),
 }));

@@ -18,6 +18,7 @@ export function LeftSidebar() {
   const activeTool = useEditorStore((state) => state.activeTool);
   const setActiveTool = useEditorStore((state) => state.setActiveTool);
   const addNode = useEditorStore((state) => state.addNode);
+  const pushHistory = useEditorStore((state) => state.pushHistory);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -37,6 +38,7 @@ export function LeftSidebar() {
       
       const imageUrl = response.data.url;
       
+      pushHistory();
       addNode({
         id: crypto.randomUUID(),
         type: 'image',
@@ -76,6 +78,8 @@ export function LeftSidebar() {
       x: 350, // Roughly center of 800x600 canvas
       y: 250,
     };
+
+    pushHistory();
 
     if (toolId === 'rectangle') {
       addNode({

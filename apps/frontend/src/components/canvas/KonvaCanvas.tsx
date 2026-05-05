@@ -30,6 +30,7 @@ export default function KonvaCanvas() {
   const updateNode = useEditorStore((state) => state.updateNode);
   const activeTool = useEditorStore((state) => state.activeTool);
   const setStageRef = useEditorStore((state) => state.setStageRef);
+  const pushHistory = useEditorStore((state) => state.pushHistory);
 
   const stageRef = useRef<any>(null);
   const trRef = useRef<any>(null);
@@ -140,7 +141,9 @@ export default function KonvaCanvas() {
           setSelectedNodeId(null);
         }
       },
+      onDragStart: () => pushHistory(),
       onDragEnd: (e: any) => handleDragEnd(e, node.id),
+      onTransformStart: () => pushHistory(),
       onTransformEnd: (e: any) => handleTransformEnd(e, node),
     };
 
@@ -236,6 +239,7 @@ export default function KonvaCanvas() {
         <textarea
           value={editingNode.text}
           onChange={(e) => updateNode(editingNode.id, { text: e.target.value })}
+          onFocus={() => pushHistory()}
           onBlur={() => setEditingNodeId(null)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') setEditingNodeId(null);

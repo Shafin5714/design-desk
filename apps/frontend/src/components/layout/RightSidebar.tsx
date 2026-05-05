@@ -13,6 +13,7 @@ export function RightSidebar() {
   const sendBackward = useEditorStore((state) => state.sendBackward);
   const bringToFront = useEditorStore((state) => state.bringToFront);
   const sendToBack = useEditorStore((state) => state.sendToBack);
+  const pushHistory = useEditorStore((state) => state.pushHistory);
 
   const selectedNode = nodes.find((n) => n.id === selectedNodeId);
 
@@ -24,6 +25,7 @@ export function RightSidebar() {
 
   const handleDelete = () => {
     if (selectedNodeId) {
+      pushHistory();
       deleteNode(selectedNodeId);
     }
   };
@@ -63,7 +65,7 @@ export function RightSidebar() {
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-xs text-foreground/70">X</label>
-              <input 
+              <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                 type="number" 
                 value={Math.round(selectedNode.x)} 
                 onChange={(e) => handleChange('x', parseFloat(e.target.value) || 0)}
@@ -72,7 +74,7 @@ export function RightSidebar() {
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs text-foreground/70">Y</label>
-              <input 
+              <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                 type="number" 
                 value={Math.round(selectedNode.y)} 
                 onChange={(e) => handleChange('y', parseFloat(e.target.value) || 0)}
@@ -85,7 +87,7 @@ export function RightSidebar() {
             {('width' in selectedNode) && (
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-foreground/70">Width</label>
-                <input 
+                <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                   type="number" 
                   value={Math.round((selectedNode as any).width)} 
                   onChange={(e) => handleChange('width', Math.max(5, parseFloat(e.target.value) || 5))}
@@ -96,7 +98,7 @@ export function RightSidebar() {
             {('height' in selectedNode) && (
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-foreground/70">Height</label>
-                <input 
+                <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                   type="number" 
                   value={Math.round((selectedNode as any).height)} 
                   onChange={(e) => handleChange('height', Math.max(5, parseFloat(e.target.value) || 5))}
@@ -107,7 +109,7 @@ export function RightSidebar() {
             {('radius' in selectedNode) && (
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-foreground/70">Radius</label>
-                <input 
+                <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                   type="number" 
                   value={Math.round((selectedNode as any).radius)} 
                   onChange={(e) => handleChange('radius', Math.max(5, parseFloat(e.target.value) || 5))}
@@ -119,7 +121,7 @@ export function RightSidebar() {
           
           <div className="flex flex-col gap-1">
             <label className="text-xs text-foreground/70">Rotation (°)</label>
-            <input 
+            <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
               type="number" 
               value={Math.round(selectedNode.rotation || 0)} 
               onChange={(e) => handleChange('rotation', parseFloat(e.target.value) || 0)}
@@ -130,10 +132,10 @@ export function RightSidebar() {
           <div className="flex flex-col gap-1 mt-2">
             <label className="text-xs text-foreground/70">Layer Order</label>
             <div className="flex items-center gap-2">
-              <button onClick={() => bringToFront(selectedNode.id)} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Bring to Front"><BringToFront size={16} /></button>
-              <button onClick={() => bringForward(selectedNode.id)} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Bring Forward"><ArrowUp size={16} /></button>
-              <button onClick={() => sendBackward(selectedNode.id)} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Send Backward"><ArrowDown size={16} /></button>
-              <button onClick={() => sendToBack(selectedNode.id)} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Send to Back"><SendToBack size={16} /></button>
+              <button onClick={() => { pushHistory(); bringToFront(selectedNode.id); }} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Bring to Front"><BringToFront size={16} /></button>
+              <button onClick={() => { pushHistory(); bringForward(selectedNode.id); }} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Bring Forward"><ArrowUp size={16} /></button>
+              <button onClick={() => { pushHistory(); sendBackward(selectedNode.id); }} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Send Backward"><ArrowDown size={16} /></button>
+              <button onClick={() => { pushHistory(); sendToBack(selectedNode.id); }} className="p-1.5 bg-background border border-border rounded hover:bg-foreground/5 transition-colors text-foreground/70 hover:text-foreground" title="Send to Back"><SendToBack size={16} /></button>
             </div>
           </div>
         </div>
@@ -145,7 +147,7 @@ export function RightSidebar() {
             
             <div className="flex flex-col gap-1">
               <label className="text-xs text-foreground/70">Content</label>
-              <textarea 
+              <textarea onFocus={() => pushHistory()} 
                 value={(selectedNode as any).text} 
                 onChange={(e) => handleChange('text', e.target.value)}
                 className="w-full bg-background border border-border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary min-h-[60px] resize-y"
@@ -155,7 +157,7 @@ export function RightSidebar() {
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-foreground/70">Font Size</label>
-                <input 
+                <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                   type="number" 
                   value={Math.round((selectedNode as any).fontSize)} 
                   onChange={(e) => handleChange('fontSize', Math.max(8, parseFloat(e.target.value) || 8))}
@@ -165,7 +167,7 @@ export function RightSidebar() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-foreground/70">Color</label>
                 <div className="flex h-8 w-full overflow-hidden rounded-md border border-border">
-                  <input 
+                  <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                     type="color" 
                     value={(selectedNode as any).fill} 
                     onChange={(e) => handleChange('fill', e.target.value)}
@@ -186,7 +188,7 @@ export function RightSidebar() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-foreground/70">Fill Color</label>
                 <div className="flex h-8 w-full overflow-hidden rounded-md border border-border">
-                  <input 
+                  <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                     type="color" 
                     value={(selectedNode as any).fill} 
                     onChange={(e) => handleChange('fill', e.target.value)}
@@ -202,7 +204,7 @@ export function RightSidebar() {
                   <label className="text-xs text-foreground/70">Corner Radius</label>
                   <span className="text-xs text-foreground/50">{(selectedNode as any).cornerRadius || 0}px</span>
                 </div>
-                <input 
+                <input onFocus={() => pushHistory()} onPointerDown={() => pushHistory()} 
                   type="range" 
                   min="0" 
                   max="100" 

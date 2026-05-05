@@ -9,6 +9,11 @@ export function Header() {
   const projectId = useEditorStore(state => state.projectId);
   const nodes = useEditorStore(state => state.nodes);
   const stageRef = useEditorStore(state => state.stageRef);
+  
+  const undo = useEditorStore(state => state.undo);
+  const redo = useEditorStore(state => state.redo);
+  const past = useEditorStore(state => state.past);
+  const future = useEditorStore(state => state.future);
 
   const handleSave = async () => {
     if (!projectId) return;
@@ -66,10 +71,20 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-1">
-        <button className="p-2 hover:bg-foreground/5 rounded-md transition-colors text-foreground/70 hover:text-foreground" title="Undo">
+        <button 
+          onClick={undo}
+          disabled={past.length === 0}
+          className="p-2 hover:bg-foreground/5 rounded-md transition-colors text-foreground/70 hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed" 
+          title="Undo"
+        >
           <Undo2 size={18} />
         </button>
-        <button className="p-2 hover:bg-foreground/5 rounded-md transition-colors text-foreground/70 hover:text-foreground" title="Redo">
+        <button 
+          onClick={redo}
+          disabled={future.length === 0}
+          className="p-2 hover:bg-foreground/5 rounded-md transition-colors text-foreground/70 hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed" 
+          title="Redo"
+        >
           <Redo2 size={18} />
         </button>
       </div>
