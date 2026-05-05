@@ -22,7 +22,7 @@ api.interceptors.response.use(
       // Token expired or invalid, log out the user
       useAuthStore.getState().logout();
       if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     }
     return Promise.reject(error);
