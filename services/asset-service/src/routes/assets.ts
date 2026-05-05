@@ -6,8 +6,8 @@ import { requireAuth, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-// Configure ImageKit
-const imagekit = new ImageKit({
+// Get ImageKit instance lazily since dotenv is loaded after imports
+const getImageKit = () => new ImageKit({
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY as string,
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY as string,
   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT as string,
@@ -22,7 +22,7 @@ router.use(requireAuth);
 // Get ImageKit Authentication Parameters (for direct client-side uploads if needed later)
 router.get('/auth', (req, res) => {
   try {
-    const result = imagekit.getAuthenticationParameters();
+    const result = getImageKit().getAuthenticationParameters();
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ error: 'Failed to get ImageKit auth parameters' });
@@ -37,7 +37,7 @@ router.post('/upload', upload.single('file'), async (req: AuthRequest, res) => {
     }
 
     // Upload to ImageKit
-    const uploadResponse = await imagekit.upload({
+    const uploadResponse = await getImageKit().upload({
       file: req.file.buffer,
       fileName: req.file.originalname,
       folder: `/design-desk/users/${req.user!.id}`, // Organize by user
@@ -49,7 +49,7 @@ router.post('/upload', upload.single('file'), async (req: AuthRequest, res) => {
       fileId: uploadResponse.fileId,
       name: uploadResponse.name,
       url: uploadResponse.url,
-      thumbnailUrl: imagekit.url({
+      thumbnailUrl: getImageKit().url({
         src: uploadResponse.url,
         transformation: [{ height: "300", width: "300" }]
       }),
@@ -86,7 +86,7 @@ router.delete('/:id', async (req: AuthRequest, res) => {
     }
 
     // Delete from ImageKit
-    await imagekit.deleteFile(asset.fileId);
+    await getImageKit().deleteFile(asset.fileId);
 
     // Delete from MongoDB
     await asset.deleteOne();
