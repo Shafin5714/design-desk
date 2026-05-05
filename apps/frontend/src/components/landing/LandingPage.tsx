@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Layers } from 'lucide-react';
 import Image from 'next/image';
+import { AuthModal } from '@/components/auth/AuthModal';
 
 export function LandingPage() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authType, setAuthType] = useState<'login' | 'register'>('login');
+
+  const openAuthModal = (type: 'login' | 'register') => {
+    setAuthType(type);
+    setIsAuthModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col font-sans bg-gradient-to-br from-[#5e21d9] via-[#8d2de2] to-[#01b4e4] text-white overflow-x-hidden relative">
       
@@ -30,18 +39,18 @@ export function LandingPage() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link 
-            href="/login" 
+          <button 
+            onClick={() => openAuthModal('login')}
             className="hidden md:inline-block font-medium text-sm text-white hover:text-white/80 transition-colors"
           >
             Log in
-          </Link>
-          <Link 
-            href="/register" 
+          </button>
+          <button 
+            onClick={() => openAuthModal('register')}
             className="bg-white text-indigo-900 font-semibold text-sm px-5 py-2.5 rounded-md hover:bg-gray-100 transition-colors shadow-sm"
           >
             Sign up
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -54,12 +63,12 @@ export function LandingPage() {
           Make AI-powered social posts, videos, presentations, and more with Design Desk.
         </p>
         
-        <Link 
-          href="/register" 
+        <button 
+          onClick={() => openAuthModal('register')}
           className="bg-white text-indigo-900 font-bold text-base px-8 py-4 rounded-lg hover:bg-gray-100 transition-all shadow-xl hover:scale-105 active:scale-95 mb-16"
         >
           Start designing for free
-        </Link>
+        </button>
 
         {/* Hero Mockup Image */}
         <div className="w-full max-w-5xl px-4 mx-auto pb-20">
@@ -82,6 +91,12 @@ export function LandingPage() {
          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-white/10 blur-[120px]"></div>
          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-cyan-300/20 blur-[150px]"></div>
       </div>
+
+      <AuthModal 
+        initialType={authType} 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </div>
   );
 }

@@ -36,3 +36,18 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   overflow: hidden; /* Prevent scrolling on the main editor window */
 }
+
+/* Global interaction styles */
+button,
+a,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+}
